@@ -38,34 +38,6 @@ SELECT relation::regclass, * FROM pg_locks WHERE NOT GRANTED;
 select regexp_replace(field, E'[\\n\\r]+', ' ', 'g' )
 ```
 
-- Создание дампа схемы (без данных)  
-```
-pg_dump -t 'schema_name.table_name' --schema-only database_name
-```
-
-- Восстановление из дампа  
-```
-psql -d database_name < table.dump
-```  
-или  
-```
-pg_restore --table=table_name table.dump
-```
-
-- Мониторинг размера темповых файлов  
-```
-watch df -h /dir/PG_version_oid/pgsql_tmp
-```
-
-- Флаг для остановки группы скриптов при ошибке в одном из скриптов  
-```
-psql -v ON_ERROR_STOP=1
-```  
-или  
-```
-\set ON_ERROR_STOP on
-```
-
 - Обнуление статистики pg_stat_statements  
 ```sql
 select pg_stat_statements_reset();
@@ -84,30 +56,11 @@ GRANT USAGE ON FOREIGN SERVER foreign_db TO user_name;
 select pg_get_functiondef(select oid from pg_proc where proname = 'func_name');
 ```
 
-- Информация по объектам и их правам  
-```
-\dfS+
-```  
-или  
-```
-\dtS+
-```
-
 - Множественные условия в LIKE запросе  
 ```sql
 SELECT * FROM test_table
 WHERE attr_name LIKE
   ANY (ARRAY['foo%', '%bar%', 'ba z.', 'daz%'])
-```
-
-- Выводим сумму в байтах темповых файлов, сгенеренных в логе  
-```
-cat postgresql_file.log | grep "LOG:  temporary file:" > temps.txt && awk '{s+=$15}END{print s}' temps.txt
-```
-
-- Массовое выполнение скриптов по цифровому порядку в их именах (1.sql, 2.sql, 3.sql)  
-```
-for i in $(ls -1 /dir/*.sql|sort -n) ;do psql -d database_name -v ON_ERROR_STOP=ON -f $i ;done
 ```
 
 - Создание таблицы с использованием INTO  
@@ -188,6 +141,54 @@ year |   array_agg   | sort_array_agg | array_to_string |  my_simple_array
  2017 | {56,67,12,30} | {12,30,56,67}  | 56;67;12;30     | {This,is,my,array}
  2020 | {8}           | {8}            | 8               | {This,is,my,array}
  2030 | {17,50}       | {17,50}        | 17;50           | {This,is,my,array}
+```
+
+## Немного bash
+- Создание дампа схемы (без данных)  
+```
+pg_dump -t 'schema_name.table_name' --schema-only database_name
+```
+
+- Восстановление из дампа  
+```
+psql -d database_name < table.dump
+```  
+или  
+```
+pg_restore --table=table_name table.dump
+```
+
+- Мониторинг размера темповых файлов  
+```
+watch df -h /dir/PG_version_oid/pgsql_tmp
+```
+
+- Флаг для остановки группы скриптов при ошибке в одном из скриптов  
+```
+psql -v ON_ERROR_STOP=1
+```  
+или  
+```
+\set ON_ERROR_STOP on
+```
+
+- Информация по объектам и их правам  
+```
+\dfS+
+```  
+или  
+```
+\dtS+
+```
+
+- Выводим сумму в байтах темповых файлов, сгенеренных в логе  
+```
+cat postgresql_file.log | grep "LOG:  temporary file:" > temps.txt && awk '{s+=$15}END{print s}' temps.txt
+```
+
+- Массовое выполнение скриптов по цифровому порядку в их именах (1.sql, 2.sql, 3.sql)  
+```
+for i in $(ls -1 /dir/*.sql|sort -n) ;do psql -d database_name -v ON_ERROR_STOP=ON -f $i ;done
 ```
 
 ## Напоминалки
