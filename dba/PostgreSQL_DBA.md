@@ -43,6 +43,27 @@ select regexp_replace(field, E'[\\n\\r]+', ' ', 'g' )
 select pg_stat_statements_reset();
 ```
 
+- Получение пути к файлу таблицы   
+```sql
+select pg_relation_filepath('pgbench_accounts');
+pg_relation_filepath
+--
+ base/12994/16504
+```
+
+- Получение имени таблицы по OID tablespace + OID таблицы  
+```sql
+select pg_filenode_relation(0, 16504);
+pg_filenode_relation
+--
+pgbench_accounts
+```
+
+- Читаем конфигурационный файл (или любой другой) из директории PGDATA или PGLOG 
+```sql
+select pg_read_file('postgresql.conf');
+```
+
 - Создание внешнего сервера и пользовательских маппингов  
 ```sql
 DROP SERVER IF EXISTS foreign_db CASCADE;
