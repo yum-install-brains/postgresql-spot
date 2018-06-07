@@ -2,7 +2,7 @@
 - Вставляем метаданные Liquibase  
 ```sql
 delete from databasechangelog
-where id in ('JIRA-000');
+where id = 'JIRA-000' and author = 'yum_install_brains' and filename = 'dir/file.xml';
 --
 insert into databasechangelog (id,author,filename,dateexecuted,orderexecuted,exectype,md5sum,description,comments,tag,liquibase)
 values ('JIRA-000','yum_install_brains','dir/file.xml',now(),1,'EXECUTED',null,'sql','',null,'3.5.3');
