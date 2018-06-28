@@ -20,6 +20,26 @@ order by jlgstart desc
 limit 1;
 ```
 
+- Какие и кому привелегии выданы на таблицу
+```sql
+SELECT grantee, privilege_type
+FROM information_schema.role_table_grants
+WHERE table_name='pgbench_accounts';
+┌───────────┬────────────────┐
+│  grantee  │ privilege_type │
+├───────────┼────────────────┤
+│ postgres  │ INSERT         │
+│ postgres  │ SELECT         │
+│ postgres  │ UPDATE         │
+│ postgres  │ DELETE         │
+│ postgres  │ TRUNCATE       │
+│ postgres  │ REFERENCES     │
+│ postgres  │ TRIGGER        │
+│ test_user │ INSERT         │
+│ test_user │ SELECT         │
+└───────────┴────────────────┘
+```
+
 - COPY шаблон  
 ```sql
 COPY (
@@ -59,7 +79,7 @@ pg_filenode_relation
 pgbench_accounts
 ```
 
-- Читаем конфигурационный файл (или любой другой) из директории PGDATA или PGLOG 
+- Читаем конфигурационный файл (или любой другой) из директории PGDATA или PGLOG
 ```sql
 select pg_read_file('postgresql.conf');
 ```
