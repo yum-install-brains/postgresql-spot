@@ -35,3 +35,8 @@ SELECT locktype, mode FROM pg_locks WHERE pid = pg_backend_pid() AND relation = 
 └──────────┴──────────────────────────┘
 COMMIT;
 ```
+
+### Источники
+- [Блог](https://blog.2ndquadrant.com/how-to-check-the-lock-level-taken-by-operations-in-postgresql/) 2ndquadrant.com
+- [Блог](https://leopard.in.ua/2016/09/20/safe-and-unsafe-operations-postgresql#.Wz963JL4ksl) leopard.in.ua
+- [Документация](https://www.postgresql.org/docs/current/static/explicit-locking.html) PostgreSQL
