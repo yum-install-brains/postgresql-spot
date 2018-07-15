@@ -1,23 +1,19 @@
 ## VACUUM
 
-- [VACUUM](#VACUUM)
-	- [Ссылки](#)
+- [VACUUM](#)
 	- [Введение](#)
-	- [VACUUM vs VACUUM FULL](#VACUUM-vs-VACUUM-FULL)
-	- [Неблокирующий VACUUM](#-VACUUM)
-		- [Блок 1](#-1)
-		- [Блок 2](#-2)
-		- [Блок 3](#-3)
-	- [Visibility Map](#visibility-map)
-		- [Ленивый режим](#-)
-		- [Жадный режим](#-)
-		- [Запрос для получения pg_class.relfrozenxid и pg_database.datfrozenxid](#-pgclassrelfrozenxid-pgdatabasedatfrozenxid)
-	- [AUTOVACUUM](#AUTOVACUUM)
-
-<!-- /TOC -->
-
-#### Ссылки
-[VACUUM processing](http://www.interdb.jp/pg/pgsql06.html)
+	- [VACUUM vs VACUUM FULL](#)
+	- [Неблокирующий VACUUM](#)
+		- [Блок 1](#)
+		- [Блок 2](#)
+		- [Блок 3](#)
+	- [Visibility Map](#)
+		- [Ленивый режим](#)
+		- [Жадный режим](#)
+		- [Запрос для получения pg_class.relfrozenxid и pg_database.datfrozenxid](#)
+	- [AUTOVACUUM](#)
+	- [Известные баги и их workaround](#)
+	- [Ссылки](#)		
 
 #### Введение
 VACUUM – это процесс обслуживания PostgreSQL, двумя основными задачами коготоро являются **удаление мертвых строк** и **заморозка идентификаторов транзакций**. Процесс можно запустить руками, но также он запускается и автоматически демоном AUTOVACUUM.
@@ -181,3 +177,11 @@ testdb=# SELECT datname, datfrozenxid FROM pg_database WHERE datname = 'testdb';
 
 #### AUTOVACUUM
 Автовакуум - демон автоматического запуска процедуры VACUUM. Он запускается каждые autovacuum_naptime секунд и порождает autovacuum_max_works число воркеров. Воркеры производят неблокирующий VACUUM.
+
+#### Известные баги
+- [ERROR: found multixact from before relminmxid](http://www.postgresql-archive.org/ERROR-found-multixact-from-before-relminmxid-td6015389.html) и [pgsql: Don't mark pages all-visible spuriously](http://www.postgresql-archive.org/pgsql-Don-t-mark-pages-all-visible-spuriously-td6019854.html). Баг есть в версии 9.6 и выше. Проблема в том, что во время выполнения операции VACUUM, блоки, содержащие строки заблокированные [мультитранзакциями](https://postgrespro.ru/docs/postgrespro/9.6/routine-vacuuming), могут быть ошибочно признаны полностью видимыми. Поэтому вакуум не заморозит старые строки в таких блоках и через какое-то время они станут старше, чем relminmxid.
+[Исправлено](https://www.postgresql.org/docs/10/static/release-10-4.html) в версии 10.4. Лечится двумя способами: а) пересоздать таблицу, например с помощью pg_repack б) найти некорректные строки в таблице (`select * from table where xid < relfrozenxid and xid != 0`), удалить и повторно вставить их.
+- [found xmin from before relfrozenxid on pg_catalog.pg_authid](https://www.postgresql.org/message-id/20180525203736.crkbg36muzxrjj5e@alap3.anarazel.de) и [http://www.postgresql-archive.org/Error-on-vacuum-xmin-before-relfrozenxid-td6021953.html](Error on vacuum: xmin before relfrozenxid). Проблема может возникать при выполнении VACUUM общих таблиц (из pg_catalog) и приводит к невозможности выполнения VACUUM. Проблема вызвана тем что relfrozenxid в relcache и в каталоге отличаются. Это приводит к некорректной работе VACUUM. Воркэраундом является удаление файла `global/pg_internal.init`.
+
+#### Ссылки
+[VACUUM processing](http://www.interdb.jp/pg/pgsql06.html)
