@@ -184,5 +184,5 @@ testdb=# SELECT datname, datfrozenxid FROM pg_database WHERE datname = 'testdb';
 - [found xmin from before relfrozenxid on pg_catalog.pg_authid](https://www.postgresql.org/message-id/20180525203736.crkbg36muzxrjj5e@alap3.anarazel.de) и [http://www.postgresql-archive.org/Error-on-vacuum-xmin-before-relfrozenxid-td6021953.html](Error on vacuum: xmin before relfrozenxid). Проблема может возникать при выполнении VACUUM общих таблиц (из pg_catalog) и приводит к невозможности выполнения VACUUM. Проблема вызвана тем что relfrozenxid в relcache и в каталоге отличаются. Это приводит к некорректной работе VACUUM. Воркэраундом является [удаление файла](https://www.postgresql.org/message-id/20180619165837.wxtitjqkpusjbidv%40alap3.anarazel.de) `global/pg_internal.init`.
 
 
-#### Ссылки
+#### Источники
 [VACUUM processing](http://www.interdb.jp/pg/pgsql06.html)
