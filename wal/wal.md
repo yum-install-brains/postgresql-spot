@@ -85,3 +85,4 @@ where, placeholder %p is copied WAL segment, and %f is archive log.
 
 ### Sources
 - [interdb.jp blog](http://www.interdb.jp/pg/pgsql09.html)
+- [DBA2](https://www.youtube.com/watch?v=GghMySWRH48&t=1s&index=8&list=PLaFqU3KCWw6JgufXBiW4dEB2-tDpmOXPH)
